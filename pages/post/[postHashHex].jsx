@@ -5,14 +5,11 @@ import desoAPI from "../api/desoAPI";
 
 const da = new desoAPI();
 
-  function Post({isPostFound, postFound, imgURL}) {
-  
+function Post({ isPostFound, postFound, imgURL }) {
   //const router = useRouter();
   //console.log(router);
   //const { postHashHex } = router.query;
   //console.log(postHashHex);
-
- 
 
   /* useEffect(() => {
     if (postHashHex == undefined) return;
@@ -33,9 +30,7 @@ const da = new desoAPI();
       ) : (
         <>
           <Head>
-            <title>
-              Post by {postFound.ProfileEntryResponse.Username}
-            </title>
+            <title>Post by {postFound.ProfileEntryResponse.Username}</title>
             <meta
               property='og:title'
               content={`Post by ${postFound.ProfileEntryResponse.Username}`}
@@ -46,7 +41,7 @@ const da = new desoAPI();
               content={postFound.Body}
               key='description'
             />
-            <meta property='og:image' content={imgURL} key='image' />
+            <meta property='og:' content={imgURL} key='image' />
           </Head>
           <div>{postFound.Body}</div>
         </>
@@ -57,24 +52,25 @@ const da = new desoAPI();
 
 export async function getServerSideProps(context) {
   const { postHashHex } = context.query;
-  console.log(postHashHex)
+  console.log(postHashHex);
   const response = await da.getSinglePost(postHashHex);
-  var postFound = response.PostFound;
-  console.log(postFound)
+  var postFound = null;
+  var imgURL = null;
   var isPostFound = false;
-  var imgURL = ""
-  if (postFound.length !== 0) {
+  if (response != null) {
+    var postFound = response.PostFound;
+    console.log(postFound);
+
     isPostFound = true;
-    if(postFound.ImageURLs != null){
+    if (postFound.ImageURLs != null) {
       imgURL = postFound.ImageURLs[0];
     }
   }
-
   return {
     props: {
       isPostFound,
       postFound,
-      imgURL
+      imgURL,
     },
   };
 }
