@@ -4,7 +4,7 @@ import Head from "next/head";
 import desoAPI from "../api/desoAPI";
 
 const da = new desoAPI();
-export default function post() {
+export default function Post() {
   const router = useRouter();
   console.log(router);
   const { postHashHex } = router.query;
