@@ -4,56 +4,79 @@ import Head from "next/head";
 import desoAPI from "../api/desoAPI";
 
 const da = new desoAPI();
-export default function Post() {
-  const router = useRouter();
-  console.log(router);
-  const { postHashHex } = router.query;
-  console.log(postHashHex);
 
-  const [isLoading, setIsLoading] = useState(true);
-  const [bodyImg, setBodyImg] = useState("");
-  const [post, setPost] = useState(null);
-  useEffect(() => {
-    async function fetchPost() {
-      const response = await da.getSinglePost(
-        postHashHex
-      );
-      setPost(response);
-      if(response.PostFound.ImageURLs != null) {
-        setBodyImg(response.PostFound.ImageURLs[0]);
-      }
-      setIsLoading(false);
+  function Post({isPostFound, postFound, imgURL}) {
+  
+  //const router = useRouter();
+  //console.log(router);
+  //const { postHashHex } = router.query;
+  //console.log(postHashHex);
+
+ 
+
+  /* useEffect(() => {
+    if (postHashHex == undefined) return;
+    setPost(response);
+    if (response.PostFound.ImageURLs != null) {
+      setBodyImg(response.PostFound.ImageURLs[0]);
     }
-    if(postHashHex == undefined) return
+    setIsLoading(false);
+
     console.log("fetching...");
     fetchPost();
     console.log("loaded...");
-  }, [postHashHex]);
+  }, [postHashHex]); */
   return (
     <>
-      {isLoading ? (
-        <div>Loading...</div>
+      {!isPostFound ? (
+        <div>No Post Found</div>
       ) : (
         <>
           <Head>
             <title>
-              Post by {post.PostFound.ProfileEntryResponse.Username}
+              Post by {postFound.ProfileEntryResponse.Username}
             </title>
             <meta
               property='og:title'
-              content={`Post by ${post.PostFound.ProfileEntryResponse.Username}`}
+              content={`Post by ${postFound.ProfileEntryResponse.Username}`}
               key='title'
             />
             <meta
               property='og:description'
-              content={post.PostFound.Body}
+              content={postFound.Body}
               key='description'
             />
-            <meta property='og:image' content={bodyImg} key='image' />
+            <meta property='og:image' content={imgURL} key='image' />
           </Head>
-          <div>{post.PostFound.Body}</div>
+          <div>{postFound.Body}</div>
         </>
       )}
     </>
   );
 }
+
+export async function getServerSideProps(context) {
+  const { postHashHex } = context.query;
+  console.log(postHashHex)
+  const response = await da.getSinglePost(postHashHex);
+  var postFound = response.PostFound;
+  console.log(postFound)
+  var isPostFound = false;
+  var imgURL = ""
+  if (postFound.length !== 0) {
+    isPostFound = true;
+    if(postFound.ImageURLs != null){
+      imgURL = postFound.ImageURLs[0];
+    }
+  }
+
+  return {
+    props: {
+      isPostFound,
+      postFound,
+      imgURL
+    },
+  };
+}
+
+export default Post;
