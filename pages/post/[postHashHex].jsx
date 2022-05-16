@@ -41,7 +41,8 @@ function Post({ isPostFound, postFound, imgURL }) {
               content={postFound.Body}
               key='description'
             />
-            <meta property='og:' content={imgURL} key='image' />
+            <meta name="twitter:card" content={postFound.Body}></meta>
+            <meta property='og:image' content={imgURL} key='image' />
           </Head>
           <div>{postFound.Body}</div>
         </>
