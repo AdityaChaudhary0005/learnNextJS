@@ -5,7 +5,8 @@ import desoAPI from "../api/desoAPI";
 
 const da = new desoAPI();
 
-function Post({ isPostFound, postFound, imgURL }) {
+function Post({ isPostFound, postFound, imgURL, curentURL }) {
+//get current hosted domain URL
   //const router = useRouter();
   //console.log(router);
   //const { postHashHex } = router.query;
@@ -36,13 +37,16 @@ function Post({ isPostFound, postFound, imgURL }) {
               content={`Post by ${postFound.ProfileEntryResponse.Username}`}
               key='title'
             />
+
+<meta content={`${curentURL}/post/${postFound.PostHashHex}`} property="og:url" />
             <meta
               property='og:description'
-              content={postFound.Body}
+              content={postFound.Body.slice(0, 150)}
               key='description'
             />
             <meta name="twitter:card" content={postFound.Body}></meta>
             <meta property='og:image' content={imgURL} key='image' />
+            <meta name="twitter:card" content="summary_large_image"></meta>
           </Head>
           <div>{postFound.Body}</div>
         </>
@@ -53,14 +57,16 @@ function Post({ isPostFound, postFound, imgURL }) {
 
 export async function getServerSideProps(context) {
   const { postHashHex } = context.query;
-  console.log(postHashHex);
+  
+  const curentURL = context.req.headers.host + "";
+  console.log("test " + curentURL)
   const response = await da.getSinglePost(postHashHex);
   var postFound = null;
   var imgURL = null;
   var isPostFound = false;
   if (response != null) {
     var postFound = response.PostFound;
-    console.log(postFound);
+  
 
     isPostFound = true;
     if (postFound.ImageURLs != null) {
@@ -72,6 +78,7 @@ export async function getServerSideProps(context) {
       isPostFound,
       postFound,
       imgURL,
+      curentURL
     },
   };
 }
