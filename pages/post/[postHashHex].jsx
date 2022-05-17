@@ -38,7 +38,7 @@ function Post({ isPostFound, postFound, imgURL, curentURL }) {
               key='title'
             />
 
-<meta content={`${curentURL}/post/${postFound.PostHashHex}`} property="og:url" />
+<meta content={`https://${curentURL}/post/${postFound.PostHashHex}`} property="og:url" />
             <meta
               property='og:description'
               content={postFound.Body.slice(0, 150)}
